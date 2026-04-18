@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const photos = await getCollection('photos', ({ data }) => data.available);
+---
+
+<BaseLayout title="Photos" description="Photography by Cian Brassil.">
+  <h1 class="text-3xl font-bold">Photos</h1>
+  {/* TODO: gallery grid — map over `photos`, render <Image /> card per item */}
+  <p class="mt-4 text-gray-500">No photos yet.</p>
+</BaseLayout>

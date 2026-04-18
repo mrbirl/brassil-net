@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const photos = await getCollection('photos', ({ data }) => data.available);
+  return photos.map((photo) => ({
+    params: { slug: photo.data.slug },
+    props: { photo },
+  }));
+};
+
+const { photo } = Astro.props;
+const { Content } = await photo.render();
+---
+
+<BaseLayout title={photo.data.title} description={photo.data.description}>
+  <h1 class="text-3xl font-bold">{photo.data.title}</h1>
+  {/* TODO: large image display, description, print options table, request-print form */}
+  <Content />
+</BaseLayout>

@@ -1,0 +1,14 @@
+# Copy to .dev.vars (gitignored) and fill in values for local development.
+# These are also set in the Cloudflare Pages dashboard for production.
+
+# Resend API key — https://resend.com/api-keys
+RESEND_API_KEY=
+
+# Email address where print requests are sent
+NOTIFICATION_EMAIL=
+
+# Cloudflare Turnstile secret key — https://dash.cloudflare.com/?to=/:account/turnstile
+TURNSTILE_SECRET_KEY=
+
+# Turnstile site key (public — safe to expose in client-side code)
+PUBLIC_TURNSTILE_SITE_KEY=

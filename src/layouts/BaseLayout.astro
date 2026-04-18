@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Photography and projects by Cian Brassil.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} — brassil.net</title>
+
+    {/* Set dark mode class from system preference before first paint */}
+    <script is:inline>
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+    <header class="border-b border-gray-200 dark:border-gray-800">
+      <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="font-semibold tracking-tight">brassil.net</a>
+        <ul class="flex gap-6 text-sm">
+          <li><a href="/photos">Photos</a></li>
+          <li><a href="/apps">Apps</a></li>
+          <li><a href="/cv">CV</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="flex-1 max-w-5xl mx-auto px-4 py-8 w-full">
+      <slot />
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
+        {/* TODO: footer links, charity statement, Cloudflare Web Analytics snippet */}
+        <p>&copy; {new Date().getFullYear()} Cian Brassil. All profits from photo sales go to charity.</p>
+      </div>
+    </footer>
+  </body>
+</html>

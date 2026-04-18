@@ -1,0 +1,25 @@
+# Build output
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment variables (never commit)
+.dev.vars
+.env
+.env.*
+!.env.example
+!.dev.vars.example
+
+# Cloudflare
+.wrangler/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/settings.json
+
+# Claude Code
+.claude/

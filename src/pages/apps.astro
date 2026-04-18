@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const apps = await getCollection('apps');
+const sorted = apps.sort((a, b) =>
+  (b.data.launchedAt?.getTime() ?? 0) - (a.data.launchedAt?.getTime() ?? 0)
+);
+---
+
+<BaseLayout title="Apps" description="Vibe-coded apps by Cian Brassil.">
+  <h1 class="text-3xl font-bold">Apps</h1>
+  {/* TODO: render app cards from `sorted` — name, description, status badge, link */}
+  {sorted.length === 0 && <p class="mt-4 text-gray-500">No apps listed yet.</p>}
+</BaseLayout>

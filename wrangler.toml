@@ -1,0 +1,5 @@
+name = "brassil-net"
+compatibility_date = "2025-01-01"
+
+# pages_build_output_dir is set automatically by Cloudflare Pages CI.
+# For local testing: pnpm build && pnpm wrangler pages dev ./dist
