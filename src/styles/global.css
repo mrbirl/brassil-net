@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-background: #ECEAE5;
+  --color-surface:    #FFFFFF;
+  --color-ink:        #1A1917;
+  --color-muted:      #6B6560;
+  --color-rim:        #D9D5CF;
+  --color-subtle:     #F2EFE8;
+  --color-accent:     #B85C28;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-ink);
+  }
+
+  body {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', Georgia, serif;
+  }
+}
