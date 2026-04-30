@@ -150,6 +150,7 @@ This project uses **Astro 6**. Key differences from older docs you may find onli
 - Collections require a `loader` — use `glob` from `astro/loaders` for file-based collections.
 - Output is `static` with the Cloudflare adapter; all Astro pages are pre-rendered. The adapter enables Cloudflare-specific features but does not change the static output.
 - Tailwind CSS v3 (not v4). Config is in `tailwind.config.mjs`; `darkMode: 'class'` is set there.
+- View Transitions: use `<ClientRouter />` from `astro:transitions` — the old `<ViewTransitions />` alias was removed in Astro 6.
 
 ## Coding conventions
 

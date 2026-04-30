@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 
 interface Props {
@@ -26,7 +26,7 @@ const { title, description = 'Photography and projects by Cian Brassil.' } = Ast
       href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500&display=swap"
     />
 
-    <ViewTransitions />
+    <ClientRouter />
 
     {/* Set dark mode class from system preference before first paint */}
     <script is:inline>
