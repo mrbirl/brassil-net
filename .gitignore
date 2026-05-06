@@ -23,3 +23,7 @@ node_modules/
 
 # Claude Code
 .claude/
+
+# Dev server
+.dev.pid
+.dev.log
