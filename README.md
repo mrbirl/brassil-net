@@ -6,6 +6,10 @@ Built with Astro 6, Tailwind CSS v3, deployed on Cloudflare Pages.
 
 ## Dev commands
 
+Double-click `dev.command` to start the dev server; double-click it again to stop.
+
+Or from the terminal:
+
 ```bash
 pnpm install                      # install dependencies
 pnpm dev                          # dev server → http://localhost:4321
