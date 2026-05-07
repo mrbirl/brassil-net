@@ -76,10 +76,10 @@ No fallback to Inter, Outfit, or system-sans for primary UI. Mono stack fallback
 The homepage is a full-viewport experience. No top navigation — the three doors below the photo ARE the navigation. No scroll.
 
 Structure (top to bottom, full 100dvh):
-1. **Photo frame** — fills remaining height after nameplate. Margins: 32px top, 32px sides. Sharp corners. Contains:
+1. **Photo frame** — fills remaining height after nameplate on desktop. Margins: 32px top, 32px sides. Sharp corners. Contains:
    - Hero photo (object-fit: cover, full bleed within frame)
-   - Photo title — bottom-left corner, IBM Plex Mono italic 14px, `#FF5C1F`. Fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). On touch/coarse pointer: visible at 78% opacity by default.
-   - "View gallery →" button — top-right, IBM Plex Mono 11px uppercase, neutral (white text, semi-transparent dark background with backdropFilter blur). No accent colour.
+   - Photo title — **desktop only**. Bottom-left corner, IBM Plex Mono italic 14px, `#FF5C1F`. Hidden by default (opacity 0), fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). Not shown on touch/coarse-pointer devices at all. The `/photos` gallery is where photo titles always appear.
+   - Aspect ratios: desktop uses `flex: 1 1 auto` (fills remaining viewport height — effectively landscape, approximately 16:9 to 2:1 depending on screen dimensions). Mobile (< 640px) uses `aspect-ratio: 4/5` (portrait-friendly crop).
 2. **Nameplate** — fixed-height bottom grid. 4 columns on desktop:
    - **Col 1 — Identity:** `brassil.net` label (mono 10px uppercase muted) + `Cian Brassil` h1 in Fraunces + tagline in IBM Plex Mono muted.
    - **Col 2 — Door 01:** Photographs → /photos
@@ -95,9 +95,11 @@ Door design:
 - No accent colour anywhere on doors.
 
 On mobile (< 640px):
-- Photo frame margin reduces to 16px
-- Nameplate: 2-column grid (identity + first door in row 1, doors 2+3 in row 2)
-- Photo title visible by default at 78% opacity
+- Photo frame: margin reduces to 16px, aspect-ratio 4:5 (portrait crop), fixed size rather than flex-fill
+- Nameplate: 2-column grid (identity spans full width, doors pair across two columns)
+- Door numerals (01, 02, 03) hidden — visual stacking order implies sequence
+- Photo title: not shown on mobile or touch devices at all (desktop hover-only enhancement)
+- Tagline: visible on mobile, same position relative to nameplate as desktop
 
 ### Navigation (interior pages)
 
