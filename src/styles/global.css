@@ -3,13 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --color-background: #ECEAE5;
+  --color-background: #F5F5F4;
   --color-surface:    #FFFFFF;
-  --color-ink:        #1A1917;
-  --color-muted:      #6B6560;
-  --color-rim:        #D9D5CF;
-  --color-subtle:     #F2EFE8;
-  --color-accent:     #B85C28;
+  --color-ink:        #0A0A0A;
+  --color-muted:      #737373;
+  --color-rim:        #E5E5E4;
+  --color-accent:     #FF5C1F;
 }
 
 @layer base {
@@ -19,11 +18,12 @@
   }
 
   body {
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     font-weight: 400;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   }
 }

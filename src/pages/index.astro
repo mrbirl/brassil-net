@@ -1,8 +1,386 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+// TODO: replace with real hero photos from content collection (heroCandidate: true)
+const heroPhotos = [
+  {
+    src: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=85&auto=format&fit=crop',
+    title: 'Achill, last light',
+    alt: 'Achill Island, Co. Mayo',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=1800&q=85&auto=format&fit=crop',
+    title: 'Cliffs of Moher, February',
+    alt: 'Cliffs of Moher, Co. Clare',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1800&q=85&auto=format&fit=crop',
+    title: 'Connemara, first frost',
+    alt: 'Connemara, Co. Galway',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1485470733090-0aae1788d5af?w=1800&q=85&auto=format&fit=crop',
+    title: 'Killary, long light',
+    alt: 'Killary Harbour, Co. Galway',
+  },
+];
+
+const initialPhoto = heroPhotos[3];
 ---
 
-<BaseLayout title="Home">
-  <h1 class="text-3xl font-bold">brassil.net</h1>
-  {/* TODO: hero section, featured photos grid, brief bio, links to apps/cv/about */}
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Photography and projects by Cian Brassil." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>brassil.net</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap"
+    />
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <div class="page">
+
+      <!-- Photo frame -->
+      <div class="photo-frame" id="photo-frame">
+        <img
+          class="photo-img"
+          src={initialPhoto.src}
+          alt={initialPhoto.alt}
+          data-photos={JSON.stringify(heroPhotos)}
+        />
+        <span class="photo-title" id="photo-title">{initialPhoto.title}</span>
+        <a href="/photos" class="gallery-link">View gallery →</a>
+      </div>
+
+      <!-- Nameplate -->
+      <div class="nameplate">
+
+        <!-- Identity -->
+        <div class="identity">
+          <span class="site-label">
+            <span class="site-dot" aria-hidden="true"></span>
+            brassil.net
+          </span>
+          <h1 class="name-heading">Cian <em>Brassil</em></h1>
+          <p class="tagline">Product manager in Galway.<br />Photographs, small apps, the odd surf forecast.</p>
+        </div>
+
+        <!-- Door 01 -->
+        <a href="/photos" class="door" data-active>
+          <span class="door-num">01</span>
+          <span class="door-title">Photographs <span class="door-arrow">↗</span></span>
+          <span class="door-sub">Gallery &amp; prints</span>
+        </a>
+
+        <!-- Door 02 -->
+        <a href="/apps" class="door">
+          <span class="door-num">02</span>
+          <span class="door-title">Apps <span class="door-arrow">↗</span></span>
+          <span class="door-sub">Small things I've made</span>
+        </a>
+
+        <!-- Door 03 -->
+        <a href="/cv" class="door">
+          <span class="door-num">03</span>
+          <span class="door-title">CV <span class="door-arrow">↗</span></span>
+          <span class="door-sub">Work, in brief</span>
+        </a>
+
+        <!-- Footer row -->
+        <div class="nameplate-footer">
+          <span>© 2026</span>
+          <span>Galway · Ireland</span>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      // astro:page-load fires on every client-side navigation (and initial load),
+      // so listeners are re-attached when navigating back to this page.
+      document.addEventListener('astro:page-load', () => {
+        const frame = document.getElementById('photo-frame');
+        const titleEl = document.getElementById('photo-title');
+        if (!frame || !titleEl) return;
+
+        const isCoarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+        if (isCoarse) {
+          titleEl.classList.add('is-coarse');
+        } else {
+          frame.addEventListener('mouseenter', () => titleEl.classList.add('is-hovered'));
+          frame.addEventListener('mouseleave', () => titleEl.classList.remove('is-hovered'));
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  /* ---- Reset & base ---- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #F5F5F4;
+    color: #0A0A0A;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Page wrapper ---- */
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 100vh; /* fallback */
+  }
+
+  /* ---- Photo frame ---- */
+  .photo-frame {
+    flex: 1 1 auto;
+    position: relative;
+    margin: 32px 32px 0;
+    overflow: hidden;
+  }
+
+  .photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Photo title — accent, bottom-left, hover-reveal */
+  .photo-title {
+    position: absolute;
+    left: 22px;
+    bottom: 18px;
+    color: #FF5C1F;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+
+  .photo-title.is-hovered {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* On touch devices: always visible at reduced opacity */
+  .photo-title.is-coarse {
+    opacity: 0.78;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo-title { transition: none; }
+  }
+
+  /* Gallery link — top-right, neutral */
+  .gallery-link {
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    color: #FFFFFF;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 8px 14px;
+    background: rgba(10, 10, 10, 0.36);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .gallery-link:hover {
+    background: rgba(10, 10, 10, 0.52);
+  }
+
+  /* ---- Nameplate ---- */
+  .nameplate {
+    flex: 0 0 auto;
+    padding: 36px 40px 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto;
+    gap: 0 32px;
+    align-items: end;
+  }
+
+  /* ---- Identity block ---- */
+  .identity {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #737373;
+  }
+
+  .site-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #0A0A0A;
+    flex-shrink: 0;
+  }
+
+  .name-heading {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(30px, 3.4vw, 46px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .name-heading em {
+    font-style: italic;
+  }
+
+  .tagline {
+    color: #737373;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+
+  /* ---- Doors ---- */
+  .door {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-decoration: none;
+    color: inherit;
+    padding-top: 18px;
+    border-top: 1px solid #E5E5E4;
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .door:hover,
+  .door[data-active] {
+    border-top-color: #0A0A0A;
+  }
+
+  .door-num {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #737373;
+  }
+
+  .door-title {
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: #0A0A0A;
+  }
+
+  .door-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  .door:hover .door-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  .door-sub {
+    color: #737373;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* ---- Nameplate footer row ---- */
+  .nameplate-footer {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    font-weight: 500;
+    color: #737373;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-top: 1px solid #E5E5E4;
+    padding-top: 14px;
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 639px) {
+    .photo-frame {
+      margin: 16px 16px 0;
+    }
+
+    .nameplate {
+      padding: 24px 20px 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 20px;
+    }
+
+    /* Identity spans both columns on mobile */
+    .identity {
+      grid-column: 1 / -1;
+      margin-bottom: 20px;
+    }
+
+    .tagline {
+      display: none;
+    }
+
+    .name-heading {
+      font-size: clamp(26px, 7vw, 36px);
+    }
+
+    .door {
+      padding-top: 14px;
+    }
+
+    .door-title {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .nameplate {
+      grid-template-columns: 1fr;
+    }
+
+    .door-title {
+      font-size: 18px;
+    }
+  }
+</style>

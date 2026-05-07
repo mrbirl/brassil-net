@@ -4,196 +4,172 @@ Companion to `CLAUDE.md`. This file captures the visual direction and design dec
 
 ## Visual identity in one sentence
 
-A warm, editorial photography site that feels like a considered monograph — spacious, typographically precise, and quietly confident.
+A minimal, Swiss-mono calling card — sharp neutral palette, monospaced precision, photography front and centre. Quiet confidence, no ornament.
 
 ## Colour palette
 
-| Role | Hex | Usage |
-|---|---|---|
-| Background | `#ECEAE5` | Page background throughout |
-| Card / surface | `#FFFFFF` | Cards, modals, nav on scroll |
-| Primary text | `#1A1917` | Headings, body |
-| Muted text | `#6B6560` | Captions, labels, secondary info |
-| Border | `#D9D5CF` | Dividers, card outlines |
-| Subtle fill | `#F2EFE8` | Hover states, section backgrounds |
-| Accent | `#B85C28` | CTAs, active states, links, small highlights only |
+| Role | Token | Hex | Usage |
+|---|---|---|---|
+| Background | `background` | `#F5F5F4` | Page background throughout |
+| Surface | `surface` | `#FFFFFF` | Cards, overlays |
+| Primary text | `ink` | `#0A0A0A` | Headings, body |
+| Muted text | `muted` | `#737373` | Captions, labels, secondary info |
+| Border | `rim` | `#E5E5E4` | Dividers, card outlines, door hairlines |
+| Accent | `accent` | `#FF5C1F` | **Photo titles on hover only.** Nowhere else — not buttons, nav, links, door numerals, or section labels. |
 
 Rules:
 - No gradients. No mesh gradients, no blurred colour blobs.
 - No shadows heavier than `0 2px 20px rgba(0,0,0,0.07)`.
-- Accent used sparingly — one or two elements per section at most.
+- `#FF5C1F` appears in exactly one context: the photo title label that fades in on hover over a photo. Everywhere else the palette is strictly neutral.
 - Define all colours as CSS variables AND as Tailwind theme extensions in `tailwind.config.mjs` under `theme.extend.colors` so utility classes like `bg-background` and `text-accent` work.
 
 ## Typography
 
-**Heading font:** Fraunces (Google Fonts)
-- Display headings: 400 weight, italic where emphasis is needed (e.g. "Photographs from *the western edge*")
-- Section headings: 400–600 weight, upright
-- Letter-spacing: `-0.02em` to `-0.025em` on large sizes
-- Line-height: `1.05–1.1` on display, `1.3` on mid-size
+**Display heading:** Fraunces (Google Fonts) — used for one element only: the `Cian Brassil` nameplate heading on the homepage.
+- Weight 400, italic on the surname: `Cian <em>Brassil</em>`
+- Font-size: `clamp(30px, 3.4vw, 46px)` on the homepage nameplate
+- Letter-spacing: `-0.025em`
+- Line-height: `1.05`
 
-**Body font:** Outfit (Google Fonts)
-- Body copy: 300–400 weight, 14–15px, line-height `1.85`
-- Labels / metadata / nav: 500 weight, 10–12px, `letter-spacing: 0.08–0.15em`, uppercase
-- UI text (buttons, tags): 500 weight, 12–13px
+**Everything else:** IBM Plex Mono (Google Fonts)
+- Body copy: 400 weight, 13–15px, line-height `1.5–1.6`
+- Labels / metadata / nav: 500 weight, 10–11px, `letter-spacing: 0.04em`, uppercase
+- Door titles: 500 weight, 20px, `letter-spacing: -0.02em`
+- Photo titles: 400 weight italic, 14px
+- UI text (buttons, tags): 500 weight, 11–12px
 
-Load both fonts via `<link>` tags in the base layout `<head>`, with `display=swap` and appropriate weight subsets only (avoid loading the full family). No fallback to Inter or system fonts for primary UI.
+Load both fonts via `<link>` tags in the base layout `<head>`, with `display=swap`. Subsets: Fraunces italic + regular 400 only; IBM Plex Mono 400 + 500 + italic 400.
+
+No fallback to Inter, Outfit, or system-sans for primary UI. Mono stack fallback only: `"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace`.
 
 ## Layout principles
 
 - **Max content width:** 1280px, centred
-- **Page padding:** 64px horizontal on desktop, 24px on mobile
-- **Grid:** 12-column CSS grid. Photography sections can break to full bleed. Text and card sections respect the content width.
-- **Spacing scale:** generous. Sections have 80–96px vertical padding. Internal card padding 24–28px.
-- **Corners:** `border-radius: 12–16px` on cards. Sharp (0) on dividers and borders. Never pill-shaped except on buttons.
-- **Buttons:** Accent-filled pill (`border-radius: 100px`) for primary CTAs. Ghost/outline style for secondary, with sufficient contrast.
+- **Page padding:** 32–40px horizontal on desktop, 20px on mobile
+- **Homepage:** full-viewport calling card — no top nav, no scroll. Photo fills the upper portion; nameplate grid anchors the bottom. See homepage section below.
+- **Interior pages:** standard BaseLayout with sticky top nav.
+- **Grid:** 12-column CSS grid where needed. Photography sections can break to full bleed. Text and card sections respect the content width.
+- **Spacing:** generous. Interior page sections have 80–96px vertical padding. Nameplate internal padding 36–40px.
+- **Corners:** sharp (0) on the homepage photo frame and doors. `border-radius: 12–16px` on interior cards. Never pill-shaped except on buttons.
+- **Buttons:** sharp or very low radius (`border-radius: 0`) for primary actions on homepage. Accent-filled pill (`border-radius: 100px`) for interior page CTAs.
 
 ## Tech implementation
 
 - **Framework:** Astro + Tailwind (per `CLAUDE.md`). Do not introduce React/Next/custom CSS-only approaches.
 - **Styling:** Tailwind utility classes in markup. Extend `tailwind.config.mjs` with:
   - Full colour palette (see above)
-  - Font families for Fraunces and Outfit
+  - Font families: `serif` for Fraunces, `mono` for IBM Plex Mono
   - Spacing, radius, and letter-spacing tokens reflecting the scale here
-- **Custom CSS:** use sparingly, only for things Tailwind can't express cleanly (e.g. complex pseudo-element treatments, keyframe animations). Global styles live in `src/styles/global.css`.
-- **Components:** extract to `src/components/` once a pattern is used 3+ times. Don't pre-extract — let patterns emerge.
-- **Images:** always use Astro's `<Image />` from `astro:assets` for photo content. Never raw `<img>` for photo content.
+- **Custom CSS:** use sparingly, only for things Tailwind can't express cleanly (hover transitions, keyframe animations). Global styles live in `src/styles/global.css`.
+- **Components:** extract to `src/components/` once a pattern is used 3+ times. Don't pre-extract.
+- **Images:** always use Astro's `<Image />` from `astro:assets` for photo content in interior pages. The homepage uses a `<img>` placeholder until real hero photos are wired from the content collection.
 
 ## Site structure
 
-### Navigation
-- Sticky on scroll, background transitions from transparent to `#FFFFFF` with `1px solid #D9D5CF` border-bottom
-- Left: `brassil.net` wordmark in Fraunces 17px, preceded by a 7px accent-coloured dot
-- Right: text links (Work, Prints, About, Projects) in Outfit 13px muted, plus a filled accent pill CTA "Browse prints"
-- Mobile: hamburger triggers a full-screen overlay
+### Homepage (`/`) — calling card
 
-### Hero (homepage) — rotating
+The homepage is a full-viewport experience. No top navigation — the three doors below the photo ARE the navigation. No scroll.
 
-Replaces the static 40/60 split from earlier drafts. Same 40/60 layout (text left, photo right), but the right-hand photo rotates through 3–4 hero candidates.
+Structure (top to bottom, full 100dvh):
+1. **Photo frame** — fills remaining height after nameplate. Margins: 32px top, 32px sides. Sharp corners. Contains:
+   - Hero photo (object-fit: cover, full bleed within frame)
+   - Photo title — bottom-left corner, IBM Plex Mono italic 14px, `#FF5C1F`. Fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). On touch/coarse pointer: visible at 78% opacity by default.
+   - "View gallery →" button — top-right, IBM Plex Mono 11px uppercase, neutral (white text, semi-transparent dark background with backdropFilter blur). No accent colour.
+2. **Nameplate** — fixed-height bottom grid. 4 columns on desktop:
+   - **Col 1 — Identity:** `brassil.net` label (mono 10px uppercase muted) + `Cian Brassil` h1 in Fraunces + tagline in IBM Plex Mono muted.
+   - **Col 2 — Door 01:** Photographs → /photos
+   - **Col 3 — Door 02:** Apps → /apps
+   - **Col 4 — Door 03:** CV → /cv
+   - **Footer row** spanning all 4 cols: `© 2026` left, `Galway · Ireland` right, mono 10px uppercase muted.
 
-- Crossfade between photos, 6-second hold per photo, 800ms fade.
-- No UI chrome for the rotation — no dots, no arrows, no progress bar. The rotation should feel like ambient motion, not a carousel.
-- Pause rotation on hover over the photo column. Resume on leave.
-- Respect `prefers-reduced-motion`: if set, pick one photo at random on load and don't rotate.
-- Text column stays static across rotations — the copy doesn't change per photo, only the image does.
-- Hero photo candidates are marked with `heroCandidate: true` in the photo content collection frontmatter. Build-time selects all matching photos.
-- Coordinate label bottom-left of photo, date/conditions top-right, both in Outfit 10px at ~50% white opacity. Rotates with the photo. Suppressed if the photo's frontmatter has `showCoordinates: false`.
+Door design:
+- Top border hairline (`1px solid rim`). On hover/active: border shifts to near-black (`ink`).
+- Number label: mono 10px uppercase muted.
+- Title: IBM Plex Mono 500 20px, `letter-spacing: -0.02em`, with `↗` that translates on hover.
+- Subtitle: mono 12px muted.
+- No accent colour anywhere on doors.
 
-Text column contents (top to bottom):
-- Eyebrow label (Outfit 10px uppercase accent)
-- H1 in Fraunces, e.g. "Photographs from *the western edge*" — italic on the secondary phrase
-- Short horizontal rule (1px, border colour, 48px wide)
-- Body paragraph (Outfit 15px, muted text)
-- Two CTAs side by side (primary accent pill + ghost outline)
-- Metadata strip below a top border: three small stat blocks — prints available, % to MSF, location
+On mobile (< 640px):
+- Photo frame margin reduces to 16px
+- Nameplate: 2-column grid (identity + first door in row 1, doors 2+3 in row 2)
+- Photo title visible by default at 78% opacity
 
-### Work / photography grid (homepage section)
-- Section heading left-aligned in Fraunces 30px + "Full archive →" right-aligned in Outfit accent
-- **Asymmetric grid:** one large feature card spanning two rows on the left (~55% width), two smaller cards stacked on the right
-- Cards: white, `border-radius: 16px`, subtle shadow. Photo fills top portion. Caption below with title (Fraunces 16–20px), sub-line (Outfit 12px muted), metadata/conditions (Outfit 10px accent colour)
-- Coordinate overlay on each photo image, bottom-left, Outfit 9–10px white at ~50% opacity (suppressed per `showCoordinates` flag)
-- Hover: photo brightens +5%, card lifts `translateY(-2px)`, transition `0.2s ease`
+### Navigation (interior pages)
 
-### Prints CTA section (replacement for dark-overlay band)
+Used on all pages except the homepage.
+- Sticky on scroll, background transitions from transparent to `#FFFFFF` with `1px solid rim` border-bottom
+- Left: `brassil.net` wordmark in IBM Plex Mono 13px, preceded by a 6px near-black square dot
+- Right: text links (Photos, Apps, CV) in IBM Plex Mono 12px muted
+- Mobile: links stack under wordmark or collapse to a simple menu
 
-Replaces the dark-overlay band. Editorial treatment on the warm background:
-- Full-bleed row, no dark overlay
-- Two-column at desktop: left column holds a large editorial quote treatment — "36 prints. All proceeds to MSF." in Fraunces 48–64px, italic on "MSF", with a thin accent rule above and a small ghost-outline pill CTA below ("Browse prints →"). Right column: a single full-bleed photograph that breaks out of the content grid, no overlay, no text on it.
-- On mobile: stacks vertically, photo first then text.
-- No dark overlays anywhere on the site.
+### Photo gallery (`/photos`)
 
-### Secondary content ("Also here")
-- Three equal cards in a row: Side projects, CV, Past work
-- White cards, `border-radius: 14px`, `1px solid border`
-- Each: title in Fraunces 18px + `↗` in accent top-right → description in Outfit 13px 300 weight
-- Hover: border colour shifts to accent
-
-### Footer
-- Single rule, 26px vertical padding
-- Left: dot + "© 2026 brassil.net" in Outfit 12px muted
-- Right: Instagram, Projects, CV links in Outfit 12px muted
+- Grid of photo cards, no asymmetry required at this stage — clean uniform grid.
+- Cards: white, `border-radius: 12px`, subtle shadow. Photo fills top. Title below in IBM Plex Mono 500.
+- Photo title overlay (accent `#FF5C1F`) on hover, same spec as homepage photo title.
+- Hover: card lifts `translateY(-2px)`, 0.2s ease.
 
 ### Photo detail page (`/photos/[slug]`)
 
 - Large photo, max height ~75vh, object-contain so nothing crops
-- Below photo: metadata row (location, date, conditions) in Outfit small caps
+- Below photo: metadata row (location, date) in IBM Plex Mono small caps
 - Title in Fraunces ~42px, left-aligned
-- Long description as body copy, constrained to ~65ch
-- Print options panel: cards for each size/paper option with price, accent pill "Request this print" CTA on each
-- Request form: see below
-
-### Print request form
-
-Inline expanding panel, not a modal. When user clicks "Request this print":
-- Panel expands below the print options (250ms ease), pushes page content down naturally
-- Fields in a single column at ~560px max width: name, email, size/paper confirmation, shipping address (single textarea), optional notes
-- Turnstile widget above submit button
-- Submit is accent pill, full-width on mobile
-- Success state replaces the form with a short confirmation message in the warm background colour, no modal, no redirect
-- On mobile, same pattern — no slide-up sheets, no separate route
+- Long description as body copy, constrained to ~65ch, IBM Plex Mono
+- Print options panel: cards for each size/paper option with price; "Request this print" CTA on each
+- Request form: inline expanding panel (not a modal). Fields in a single column. Turnstile widget above submit.
 
 ### CV page (`/cv`)
 
-Defer detailed design until first pass of homepage and photos is complete. Guideline direction: single-column, editorial treatment, Fraunces for section headings, Outfit for body. Downloadable PDF link in accent colour near the top. No visual chrome — treat it as a typographic document.
+Single-column, editorial. Fraunces for section headings, IBM Plex Mono for body. Downloadable PDF link near the top. No visual chrome.
 
-## Content-driven details
+### Footer (interior pages)
 
-### Coordinates and location privacy
-
-Photo frontmatter includes `showCoordinates: boolean` (default `true`). When `false`, the coordinate overlay is suppressed on the card and detail page, and alt text uses only the place name without coordinates. Use for sensitive or private locations.
-
-### Hero rotation candidates
-
-Photo frontmatter includes `heroCandidate: boolean` (default `false`). Homepage hero rotates through all photos marked `true`. Aim for 3–5 strong candidates; never more than 6.
+- Single rule, 26px vertical padding
+- Left: `© 2026 brassil.net` in IBM Plex Mono 11px muted
+- Right: Photos, Apps, CV links in IBM Plex Mono 11px muted
 
 ## Motion and interaction
 
-- **Page load:** no splash screen, no skeleton loaders. Content renders immediately.
-- **Page transitions:** use Astro 5's `<ViewTransitions />` for subtle crossfades between routes. No custom transition choreography.
-- **Scroll reveals:** sections fade up on enter (`opacity: 0 → 1`, `translateY(16px → 0)`, `0.5s ease`, staggered per card). Use `IntersectionObserver`. Respect `prefers-reduced-motion`.
-- **Hero rotation:** 6s hold, 800ms crossfade (see Hero section).
-- **Hover on cards:** `translateY(-2px)`, brightness +5% on image, `0.2s ease`. Nothing more.
-- **Nav transition:** background and border fade in over `0.3s` on scroll past hero.
+- **Page transitions:** Astro `<ClientRouter />` for crossfades between routes. No custom choreography.
+- **Photo title reveal:** opacity + translateY, 0.25s ease. No brightness change on the photo itself.
+- **Door hover:** border-top colour change, 0.2s ease. Arrow nudges `translate(2px, -2px)`.
 - **No scroll-jacking.** Native scroll only.
 - **No Lottie, no canvas animations, no parallax, no 3D icons.**
+- Respect `prefers-reduced-motion` on all transitions.
 
 ## Photography display rules
 
-- All images: `object-fit: cover`, aspect ratios defined by the container (never by the image)
-- Feature card: unconstrained height, fills grid row
-- Small cards: `height: 160px` image area
-- Hero art: fills full column height, no padding
-- Alt text: place name + date (e.g. "Achill Island, Co. Mayo, November 2024"). Coordinates omitted from alt text regardless of `showCoordinates`.
+- All images: `object-fit: cover`, aspect ratios defined by the container
+- Hero photo: fills full frame, no padding
+- Alt text: place name + date (e.g. "Achill Island, Co. Mayo, November 2024")
 
 ## Placeholder strategy
 
-**Use real photographs as placeholders from day one.** Drop 6–8 actual photos into `/public/placeholders/` or the content collection before building layouts. Do not use SVG illustrations, greybox fills, or picsum.photos as placeholders — they flatter weak layouts and distort design judgement. The design must be built against real photographic content to be evaluated honestly.
-
-If real photos aren't ready for a given section, note a `TODO:` in the code and leave the container empty rather than filling with illustration.
+Use Unsplash URLs as hero photo placeholders until real photos are dropped in. Do not use picsum, SVG illustrations, or greybox fills. Mark every placeholder with a `TODO:` comment.
 
 ## Anti-patterns — do not implement
 
 1. Mesh gradients or blurred colour blobs
-2. `border-radius` above 16px on cards, or pill shapes on anything except buttons
+2. `border-radius` above 16px on cards, or pill shapes on anything except interior CTA buttons
 3. Heavy drop shadows
 4. Scroll-jacking or interfering with native scroll
 5. Lottie animations, 3D icon sets, or canvas effects
 6. Full-bleed hero with centred text and a single CTA button as the entire homepage layout
 7. Square thumbnail grid with identical hover overlays
-8. Inter as the only typeface with no display contrast
+8. Inter or Outfit as the body typeface (replaced by IBM Plex Mono)
 9. Ghost buttons for primary CTAs
 10. AI-style marketing copy ("empowering", "unleashing", "seamless", "elevate your", "crafted with care")
 11. Dark photo overlays with centred text on top
 12. SVG illustration placeholders that survive past initial scaffold
-13. Carousel dots, arrows, or progress indicators on the hero rotation
-14. Modal dialogs for the print request form
+13. Top navigation on the homepage
+14. Orange (`#FF5C1F`) used anywhere except photo title labels
 
 ## Open design TODOs
 
-- CV page detailed treatment (deferred until homepage and photos are complete)
-- Apps index page visual treatment (likely inherits cards pattern from "Also here")
-- About page treatment (likely inherits CV typographic approach)
+- Wire homepage hero photo from content collection (`heroCandidate: true` photos)
+- CV page detailed treatment
+- Apps index page visual treatment
+- About page treatment
 - 404 page
-- Loading/error states for the print request form beyond success
-- Choose the 3–5 hero rotation candidate photos
-- Decide whether the accent `#B85C28` needs an adjusted value for dark-mode (if dark mode ships)
+- Print request form loading/error states
+- Decide dark mode approach (homepage is already near-neutral; interior pages need a dark palette)

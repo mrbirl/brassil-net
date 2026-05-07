@@ -117,9 +117,14 @@ Apps needing backends use Cloudflare Workers + D1 (SQL) or KV (key-value); apps 
 
 ## Design principles
 
-- Slick, modern, 2026 aesthetic. Clean typography, strong image presentation, generous whitespace, subtle motion.
-- Photography-first: large imagery, minimal chrome, gallery feels like a portfolio not a store.
-- Dark mode support via Tailwind's `dark:` variants with system-preference default.
+Full design system is in `DESIGN.md` — read that alongside this file for any visual work.
+
+- **Aesthetic:** Swiss mono calling card. Minimal, neutral, precision-typeset. See `DESIGN.md`.
+- **Homepage:** Full-viewport, no top nav — the page itself is the navigation. Three doors (Photos / Apps / CV) anchor the bottom.
+- **Typography:** Fraunces for the `Cian Brassil` nameplate only. IBM Plex Mono for everything else — body, labels, nav, UI, buttons.
+- **Colour:** Near-white `#F5F5F4` background, near-black `#0A0A0A` text. Single accent `#FF5C1F` used *only* on photo title labels on hover — not buttons, links, or nav.
+- **Tailwind tokens:** `bg-background`, `text-ink`, `text-muted`, `border-rim`, `text-accent` / `bg-accent`. Font utilities: `font-serif` (Fraunces), `font-mono` (IBM Plex Mono).
+- Photography-first: large imagery, minimal chrome, no store-like framing.
 - Mobile-first responsive.
 - No tracking, no cookie banners, no consent pop-ups.
 - Core Web Vitals should be green — images lazy-loaded, responsive `srcset`, modern formats (AVIF/WebP with fallback).

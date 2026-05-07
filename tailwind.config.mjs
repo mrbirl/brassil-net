@@ -5,27 +5,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#ECEAE5',
+        background: '#F5F5F4',
         surface:    '#FFFFFF',
-        ink:        '#1A1917',
-        muted:      '#6B6560',
-        rim:        '#D9D5CF',
-        subtle:     '#F2EFE8',
-        accent:     '#B85C28',
+        ink:        '#0A0A0A',
+        muted:      '#737373',
+        rim:        '#E5E5E4',
+        accent:     '#FF5C1F',
       },
       fontFamily: {
         serif: ['Fraunces', 'Georgia', 'serif'],
-        sans:  ['Outfit', 'system-ui', 'sans-serif'],
+        mono:  ['"IBM Plex Mono"', 'ui-monospace', '"SF Mono"', 'Menlo', 'monospace'],
       },
       letterSpacing: {
         display:         '-0.02em',
         'display-tight': '-0.025em',
-        label:           '0.08em',
-        'label-wide':    '0.15em',
+        label:           '0.04em',
+        'label-wide':    '0.08em',
       },
       borderRadius: {
-        card:     '16px',
-        'card-sm': '12px',
+        card:     '12px',
+        'card-lg': '16px',
         pill:     '100px',
       },
       boxShadow: {
