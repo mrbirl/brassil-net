@@ -15,12 +15,17 @@ A minimal, Swiss-mono calling card — sharp neutral palette, monospaced precisi
 | Primary text | `ink` | `#0A0A0A` | Headings, body |
 | Muted text | `muted` | `#737373` | Captions, labels, secondary info |
 | Border | `rim` | `#E5E5E4` | Dividers, card outlines, door hairlines |
-| Accent | `accent` | `#FF5C1F` | **Photo titles on hover only.** Nowhere else — not buttons, nav, links, door numerals, or section labels. |
+| Accent | `accent` | `#FF5C1F` | **Names of specific works (photo titles, app names) on hover/display.** Nowhere else — see accent rule below. |
 
 Rules:
 - No gradients. No mesh gradients, no blurred colour blobs.
 - No shadows heavier than `0 2px 20px rgba(0,0,0,0.07)`.
-- `#FF5C1F` appears in exactly one context: the photo title label that fades in on hover over a photo. Everywhere else the palette is strictly neutral.
+- `#FF5C1F` marks **the name of a specific work**, and nothing else. Permitted uses:
+  - Photo title labels revealed on hover over a photo card (gallery and homepage)
+  - Photo title heading on the photo detail page (Fraunces, displayed once at the top)
+  - App names on the apps index, revealed on hover over an app card
+- `#FF5C1F` is **never** used for: buttons, links, navigation, focus rings, door arrows, section numerals, form CTAs, hover states on non-named elements, error states, success states, or any decorative/branding purpose.
+- Intelligibility test: if a user pointed at an orange element and asked "why is this orange?", the answer must be "because it's the name of a specific photograph or app." If the answer is anything else, the orange is wrong.
 - Define all colours as CSS variables AND as Tailwind theme extensions in `tailwind.config.mjs` under `theme.extend.colors` so utility classes like `bg-background` and `text-accent` work.
 
 ## Typography
@@ -107,6 +112,7 @@ Used on all pages except the homepage.
 - Grid of photo cards, no asymmetry required at this stage — clean uniform grid.
 - Cards: white, `border-radius: 12px`, subtle shadow. Photo fills top. Title below in IBM Plex Mono 500.
 - Photo title overlay (accent `#FF5C1F`) on hover, same spec as homepage photo title.
+- On mobile/touch (coarse pointer): photo title visible by default at 78% opacity, matching the homepage photo frame behaviour.
 - Hover: card lifts `translateY(-2px)`, 0.2s ease.
 
 ### Photo detail page (`/photos/[slug]`)
@@ -130,7 +136,12 @@ Single-column, editorial. Fraunces for section headings, IBM Plex Mono for body.
 
 ## Motion and interaction
 
-- **Page transitions:** Astro `<ClientRouter />` for crossfades between routes. No custom choreography.
+- **Gallery → detail shared element transition:** When a photo card is clicked on `/photos`, the photo itself morphs from its card position into the detail page's large hero photo position. Same image, animating to new size and location.
+  - Implement with Astro's View Transitions API and the `transition:name` directive. Each photo card image and its corresponding detail page hero share a unique transition name based on the photo slug: `transition:name={`photo-${slug}`}`.
+  - Page chrome (nav, footer, surrounding content) crossfades during the transition; only the photo morphs.
+  - Test specifically on iOS Safari — View Transitions support there is recent and has edge cases.
+  - `prefers-reduced-motion`: if set, fall back to a simple crossfade with no morphing. No special media query handling needed — Astro/browsers handle this automatically for View Transitions.
+- **All other route transitions** (e.g. `/`, `/cv`, `/apps`): simple `<ClientRouter />` crossfade. The shared element transition is specifically for gallery-to-detail.
 - **Photo title reveal:** opacity + translateY, 0.25s ease. No brightness change on the photo itself.
 - **Door hover:** border-top colour change, 0.2s ease. Arrow nudges `translate(2px, -2px)`.
 - **No scroll-jacking.** Native scroll only.
@@ -147,6 +158,8 @@ Single-column, editorial. Fraunces for section headings, IBM Plex Mono for body.
 
 Use Unsplash URLs as hero photo placeholders until real photos are dropped in. Do not use picsum, SVG illustrations, or greybox fills. Mark every placeholder with a `TODO:` comment.
 
+> **TODO — before first deploy to brassil.net production domain:** All Unsplash and other external placeholder URLs must be replaced with real photos from the content collection. Placeholders must not ship to the live domain.
+
 ## Anti-patterns — do not implement
 
 1. Mesh gradients or blurred colour blobs
@@ -162,7 +175,7 @@ Use Unsplash URLs as hero photo placeholders until real photos are dropped in. D
 11. Dark photo overlays with centred text on top
 12. SVG illustration placeholders that survive past initial scaffold
 13. Top navigation on the homepage
-14. Orange (`#FF5C1F`) used anywhere except photo title labels
+14. Orange (`#FF5C1F`) used for anything other than the name of a specific photograph or app — this includes buttons, links, nav items, focus rings, door arrows, section numerals, form CTAs, hover states on non-named elements, error states, success states, and decorative accents
 
 ## Open design TODOs
 
@@ -172,4 +185,3 @@ Use Unsplash URLs as hero photo placeholders until real photos are dropped in. D
 - About page treatment
 - 404 page
 - Print request form loading/error states
-- Decide dark mode approach (homepage is already near-neutral; interior pages need a dark palette)

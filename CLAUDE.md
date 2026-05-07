@@ -64,6 +64,8 @@ Each photo has a frontmatter file co-located with its source image. Schema (in `
 - `printOptions: Array<{ size: string; paper: string; priceEUR: number }>`
 - `available: boolean` (hide sold-out or withdrawn items without deleting)
 - `tags?: string[]`
+- `heroCandidate?: boolean` (default `false`) — homepage hero rotates through all photos marked `true`
+- `showCoordinates?: boolean` (default `true`) — when `false`, suppresses coordinate display on the photo detail page
 
 Adding a photo = drop image file + create .md frontmatter in same folder. No code changes.
 
@@ -177,6 +179,7 @@ This project uses **Astro 6**. Key differences from older docs you may find onli
 - Introduce a new framework, runtime, or hosting platform.
 - Add dependencies for things achievable with a few lines of code.
 - Create placeholder Lorem Ipsum content — ask for real copy or leave a `TODO:` marker.
+- Ship pages containing Unsplash or other external placeholder image URLs to the `brassil.net` production domain. **TODO: Before first deploy to the brassil.net production domain, all placeholder URLs must be replaced with real photos from the content collection. Placeholders must not ship to the live domain.**
 
 ## User context
 
