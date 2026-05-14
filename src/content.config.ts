@@ -8,10 +8,18 @@ const photos = defineCollection({
     slug: z.string(),
     description: z.string(),
     longDescription: z.string().optional(),
-    image: image(),
+    image: image().optional(),
+    // TODO: remove imageUrl/imageWidth/imageHeight once all photos are local files
+    imageUrl: z.string().optional(),
+    imageWidth: z.number().optional(),
+    imageHeight: z.number().optional(),
     location: z.string().optional(),
     dateTaken: z.date().optional(),
     featured: z.boolean().optional(),
+    heroCandidate: z.boolean().default(false),
+    showCoordinates: z.boolean().default(true),
+    gridSize: z.enum(['feature', 'standard']).default('standard'),
+    order: z.number().optional(),
     printOptions: z.array(
       z.object({
         size: z.string(),

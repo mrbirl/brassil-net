@@ -111,20 +111,57 @@ Used on all pages except the homepage.
 
 ### Photo gallery (`/photos`)
 
-- Grid of photo cards, no asymmetry required at this stage — clean uniform grid.
-- Cards: white, `border-radius: 12px`, subtle shadow. Photo fills top. Title below in IBM Plex Mono 500.
-- Photo title overlay (accent `#FF5C1F`) on hover, same spec as homepage photo title.
-- On mobile/touch (coarse pointer): photo title visible by default at 78% opacity, matching the homepage photo frame behaviour.
-- Hover: card lifts `translateY(-2px)`, 0.2s ease.
+#### Layout philosophy
+
+The gallery is a curated composition, not a uniform grid. **Feature photos must genuinely dominate** — roughly 2× the visual weight of standard photos, not marginally larger. The hierarchy must be obvious at a glance; push it hard.
+
+#### Grid
+
+- 12-column CSS grid on desktop (≥ 768px), `grid-auto-flow: dense`
+- Column gap: 60px, row gap: 100px
+- Page max-width 1280px, centred, 32–40px horizontal padding
+- Single column, full-width per photo on mobile (< 768px), 32px gap between photos
+
+#### Cell sizing (desktop)
+
+| `gridSize` | Landscape (≥ 1.2:1) | Portrait (≤ 0.8:1) | Square (~1:1) |
+|---|---|---|---|
+| `feature` | 12 columns — full container width, alone on its row | 7 columns, tall aspect ratio | 9 columns, tall aspect ratio |
+| `standard` | 5 columns | 4 columns | 4 columns |
+
+A `feature` landscape photo takes the entire container width and sits alone on its row. A `feature` portrait takes 7 of 12 columns and is tall, leaving room for one or two standard photos beside it. Standard photos are small — 4–5 columns — so two or three pack per row. This creates real rhythm: full-width feature moments punctuating rows of smaller standard photos.
+
+Orientation is detected from image dimensions at build time (`width / height` ratio). No manual orientation field.
+
+Photos use their natural aspect ratio; `object-fit: cover` applies when cell dimensions can't match exactly.
+
+#### Card chrome
+
+- No background, no border, no border-radius — the photo is the card
+- `cursor: pointer` on all photo cards
+- Hover: photo brightness +8%, 0.2s ease. No card translation.
+- Photo title: hidden by default on desktop, fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). IBM Plex Mono italic 14px, `#FF5C1F`, bottom-left of photo, `text-shadow: 0 1px 8px rgba(0,0,0,0.6)`.
+- On mobile/touch (`pointer: coarse`): photo title visible by default at 78% opacity, same position/styling.
+- No coordinate overlay on cards.
+- The affordance that photos are clickable = cursor pointer + brightness shift + orange title reveal. No "view" buttons, arrows, or instruction text anywhere.
+
+#### Curation order
+
+1. `order` field ascending (if present)
+2. `dateTaken` descending
+3. Filename alphabetically
+
+Gaps from `grid-auto-flow: dense` not perfectly packing are acceptable — they read as intentional whitespace in this aesthetic. Do not reorder photos to eliminate gaps.
 
 ### Photo detail page (`/photos/[slug]`)
 
-- Large photo, max height ~75vh, object-contain so nothing crops
-- Below photo: metadata row (location, date) in IBM Plex Mono small caps
-- Title in Fraunces ~42px, left-aligned
-- Long description as body copy, constrained to ~65ch, IBM Plex Mono
-- Print options panel: cards for each size/paper option with price; "Request this print" CTA on each
-- Request form: inline expanding panel (not a modal). Fields in a single column. Turnstile widget above submit.
+- Standard interior BaseLayout with sticky top nav
+- Large hero photo at top: max-height 75vh, `object-contain` (no cropping)
+- Hero image shares `transition:name={`photo-${slug}`}` with its gallery card — the photo morphs from card position to hero on navigation
+- Photo title in Fraunces ~42px, `#FF5C1F`, left-aligned, directly below the hero
+- Metadata: location + date in IBM Plex Mono muted, below the title
+- Coordinates in muted IBM Plex Mono overlaid at bottom of hero photo, suppressed when `showCoordinates: false`
+- `TODO:` long description, print options panel, request-print form, related photos
 
 ### CV page (`/cv`)
 
@@ -178,6 +215,12 @@ Use Unsplash URLs as hero photo placeholders until real photos are dropped in. D
 12. SVG illustration placeholders that survive past initial scaffold
 13. Top navigation on the homepage
 14. Orange (`#FF5C1F`) used for anything other than the name of a specific photograph or app — this includes buttons, links, nav items, focus rings, door arrows, section numerals, form CTAs, hover states on non-named elements, error states, success states, and decorative accents
+15. Masonry / Pinterest-style variable-height columns in the photo gallery
+16. Feature and standard photos at similar visual weight — feature must be roughly 2× the visual footprint of standard; if they look comparable in size, the hierarchy is wrong
+17. Forced uniform cropping that destroys photo composition
+18. Captions, metadata, or explanatory text beside photos in the gallery — context belongs on the detail page only
+19. "View more" buttons, arrows, or instruction lines in the gallery — cursor + brightness + title reveal is the only affordance needed
+20. Auto-pack algorithms that reorder photos to eliminate grid gaps — gaps are intentional whitespace, not errors
 
 ## Open design TODOs
 

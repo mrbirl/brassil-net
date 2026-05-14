@@ -27,36 +27,164 @@ const { title, description = 'Photography and projects by Cian Brassil.' } = Ast
     />
 
     <ClientRouter />
-
-    {/* Set dark mode class from system preference before first paint */}
-    <script is:inline>
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      }
-    </script>
   </head>
   <body class="bg-background text-ink font-mono min-h-screen flex flex-col">
-    <header class="border-b border-gray-200 dark:border-gray-800">
-      <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="font-semibold tracking-tight">brassil.net</a>
-        <ul class="flex gap-6 text-sm">
+
+    <header id="site-header">
+      <nav>
+        <a href="/" class="wordmark">
+          <span class="wordmark-dot" aria-hidden="true"></span>
+          brassil.net
+        </a>
+        <ul>
           <li><a href="/photos">Photos</a></li>
           <li><a href="/apps">Apps</a></li>
           <li><a href="/cv">CV</a></li>
-          <li><a href="/about">About</a></li>
         </ul>
       </nav>
     </header>
 
-    <main class="flex-1 max-w-5xl mx-auto px-4 py-8 w-full">
+    <main class="flex-1">
       <slot />
     </main>
 
-    <footer class="border-t border-gray-200 dark:border-gray-800">
-      <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
-        {/* TODO: footer links, charity statement, Cloudflare Web Analytics snippet */}
-        <p>&copy; {new Date().getFullYear()} Cian Brassil. All profits from photo sales go to charity.</p>
+    <footer>
+      <div class="footer-inner">
+        <span>&copy; {new Date().getFullYear()} brassil.net</span>
+        <ul>
+          <li><a href="/photos">Photos</a></li>
+          <li><a href="/apps">Apps</a></li>
+          <li><a href="/cv">CV</a></li>
+        </ul>
       </div>
     </footer>
+
   </body>
 </html>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const header = document.getElementById('site-header');
+    if (!header) return;
+    const update = () => header.classList.toggle('scrolled', window.scrollY > 0);
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  });
+</script>
+
+<style>
+  #site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  :global(#site-header.scrolled) {
+    background: #FFFFFF;
+    border-bottom-color: #E5E5E4;
+  }
+
+  nav {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: #0A0A0A;
+    text-decoration: none;
+    letter-spacing: 0;
+  }
+
+  .wordmark-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #0A0A0A;
+    flex-shrink: 0;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav ul a {
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    font-weight: 400;
+    color: #737373;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  nav ul a:hover {
+    color: #0A0A0A;
+  }
+
+  footer {
+    border-top: 1px solid #E5E5E4;
+  }
+
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 26px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-inner span,
+  .footer-inner ul a {
+    font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    color: #737373;
+    text-decoration: none;
+  }
+
+  .footer-inner ul {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-inner ul a:hover {
+    color: #0A0A0A;
+  }
+
+  @media (max-width: 639px) {
+    nav {
+      padding: 12px 20px;
+    }
+
+    nav ul {
+      gap: 20px;
+    }
+
+    .footer-inner {
+      padding: 20px;
+    }
+
+    .footer-inner ul {
+      gap: 16px;
+    }
+  }
+</style>
