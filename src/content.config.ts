@@ -17,7 +17,6 @@ const photos = defineCollection({
     dateTaken: z.date().optional(),
     featured: z.boolean().optional(),
     heroCandidate: z.boolean().default(false),
-    showCoordinates: z.boolean().default(true),
     gridSize: z.enum(['feature', 'standard']).default('standard'),
     order: z.number().optional(),
     printOptions: z.array(

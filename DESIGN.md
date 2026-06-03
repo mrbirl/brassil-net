@@ -113,35 +113,35 @@ Used on all pages except the homepage.
 
 #### Layout philosophy
 
-The gallery is a curated composition, not a uniform grid. **Feature photos must genuinely dominate** — roughly 2× the visual weight of standard photos, not marginally larger. The hierarchy must be obvious at a glance; push it hard.
+The gallery is a curated composition, not a uniform grid. **Feature photos must genuinely dominate** — they claim a row entirely alone at full container width. Standard photos flow in a justified row layout where each photo's aspect ratio determines its width. No empty voids; every row fills the container exactly.
 
-#### Grid
+#### Layout — desktop (≥ 768px)
 
-- 12-column CSS grid on desktop (≥ 768px), `grid-auto-flow: dense`
-- Column gap: 60px, row gap: 100px
-- Page max-width 1280px, centred, 32–40px horizontal padding
-- Single column, full-width per photo on mobile (< 768px), 32px gap between photos
+**Justified row flow.** Photos render in curation order, flowing left to right into rows. Each row targets a height of ~420px. Photos within a row maintain their native aspect ratio; their widths are computed so the row fills the container width exactly. Rows are built server-side at a 1200px effective content width.
 
-#### Cell sizing (desktop)
+- Gap between photos within a row: 24px
+- Gap between rows: 24px
+- Container: 1280px max-width, centred, 32–40px horizontal padding
 
-| `gridSize` | Landscape (≥ 1.2:1) | Portrait (≤ 0.8:1) | Square (~1:1) |
-|---|---|---|---|
-| `feature` | 12 columns — full container width, alone on its row | 7 columns, tall aspect ratio | 9 columns, tall aspect ratio |
-| `standard` | 5 columns | 4 columns | 4 columns |
+**`gridSize: 'feature'`** — photo does not join a justified row. It renders alone at full container width with native aspect ratio preserved. A wide landscape feature becomes a wide horizontal slab; a portrait feature becomes a tall slab. Features are the hierarchy moments — with ~12 photos, expect 2–3.
 
-A `feature` landscape photo takes the entire container width and sits alone on its row. A `feature` portrait takes 7 of 12 columns and is tall, leaving room for one or two standard photos beside it. Standard photos are small — 4–5 columns — so two or three pack per row. This creates real rhythm: full-width feature moments punctuating rows of smaller standard photos.
+**`gridSize: 'standard'`** — photo joins the justified row flow. Width is determined by aspect ratio at the row target height; no manual sizing.
+
+The last row of standard photos is left-aligned at the natural target height (not stretched) to avoid oversized orphan photos.
 
 Orientation is detected from image dimensions at build time (`width / height` ratio). No manual orientation field.
 
-Photos use their natural aspect ratio; `object-fit: cover` applies when cell dimensions can't match exactly.
+#### Layout — mobile (< 768px)
+
+Single column, full-width per photo, 32px gap between photos, native aspect ratio preserved.
 
 #### Card chrome
 
 - No background, no border, no border-radius — the photo is the card
 - `cursor: pointer` on all photo cards
 - Hover: photo brightness +8%, 0.2s ease. No card translation.
-- Photo title: hidden by default on desktop, fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). IBM Plex Mono italic 14px, `#FF5C1F`, bottom-left of photo, `text-shadow: 0 1px 8px rgba(0,0,0,0.6)`.
-- On mobile/touch (`pointer: coarse`): photo title visible by default at 78% opacity, same position/styling.
+- Photo title (desktop only): hidden by default, fades in on hover (opacity 0→1, translateY 4px→0, 0.25s). IBM Plex Mono italic 14px, `#FF5C1F`, bottom-left of photo, `text-shadow: 0 1px 8px rgba(0,0,0,0.6)`.
+- On mobile/touch (`pointer: coarse`): **no title overlay.** The user is on the photos page; every photo is self-evidently tappable.
 - No coordinate overlay on cards.
 - The affordance that photos are clickable = cursor pointer + brightness shift + orange title reveal. No "view" buttons, arrows, or instruction text anywhere.
 
@@ -160,7 +160,6 @@ Gaps from `grid-auto-flow: dense` not perfectly packing are acceptable — they 
 - Hero image shares `transition:name={`photo-${slug}`}` with its gallery card — the photo morphs from card position to hero on navigation
 - Photo title in Fraunces ~42px, `#FF5C1F`, left-aligned, directly below the hero
 - Metadata: location + date in IBM Plex Mono muted, below the title
-- Coordinates in muted IBM Plex Mono overlaid at bottom of hero photo, suppressed when `showCoordinates: false`
 - `TODO:` long description, print options panel, request-print form, related photos
 
 ### CV page (`/cv`)
@@ -216,7 +215,7 @@ Use Unsplash URLs as hero photo placeholders until real photos are dropped in. D
 13. Top navigation on the homepage
 14. Orange (`#FF5C1F`) used for anything other than the name of a specific photograph or app — this includes buttons, links, nav items, focus rings, door arrows, section numerals, form CTAs, hover states on non-named elements, error states, success states, and decorative accents
 15. Masonry / Pinterest-style variable-height columns in the photo gallery
-16. Feature and standard photos at similar visual weight — feature must be roughly 2× the visual footprint of standard; if they look comparable in size, the hierarchy is wrong
+16. Feature photos sharing a row with other photos — `gridSize: 'feature'` must render alone at full container width; any layout where a feature photo appears beside another photo undermines the hierarchy
 17. Forced uniform cropping that destroys photo composition
 18. Captions, metadata, or explanatory text beside photos in the gallery — context belongs on the detail page only
 19. "View more" buttons, arrows, or instruction lines in the gallery — cursor + brightness + title reveal is the only affordance needed

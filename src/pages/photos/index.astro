@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import type { ImageMetadata } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 
 const allPhotos = await getCollection('photos', ({ data }) => data.available);
 
@@ -28,47 +28,88 @@ const yearRange =
       ? String(years[0])
       : `${Math.min(...years)}–${Math.max(...years)}`;
 
-type Orientation = 'landscape' | 'portrait' | 'square';
+// Justified layout constants — computed at 1200px effective content width.
+// TARGET_HEIGHT=320 so two 3:2 landscape photos (480px each) fit per row
+// (480+24+480=984<1200); justified row heights end up ~392px in practice.
+const EFFECTIVE_WIDTH = 1200;
+const TARGET_HEIGHT = 320;
+const GAP = 24;
 
-function getOrientation(img: ImageMetadata | undefined, w?: number, h?: number): Orientation {
-  const width = img?.width ?? w ?? 0;
-  const height = img?.height ?? h ?? 0;
-  if (!width || !height) return 'landscape';
-  const ratio = width / height;
-  if (ratio >= 1.2) return 'landscape';
-  if (ratio <= 0.8) return 'portrait';
-  return 'square';
+type PhotoEntry = CollectionEntry<'photos'>;
+
+type FeatureRow = {
+  type: 'feature';
+  entry: PhotoEntry;
+  ar: number;
+};
+
+type StandardRow = {
+  type: 'standard';
+  items: Array<{ entry: PhotoEntry; ar: number; width: number; height: number }>;
+  isLast: boolean;
+};
+
+type Row = FeatureRow | StandardRow;
+
+function getAspectRatio(entry: PhotoEntry): number {
+  const w = entry.data.image?.width ?? entry.data.imageWidth ?? 0;
+  const h = entry.data.image?.height ?? entry.data.imageHeight ?? 0;
+  if (!w || !h) return 4 / 3;
+  return w / h;
 }
 
-function getColSpan(gridSize: 'feature' | 'standard', orientation: Orientation): number {
-  if (gridSize === 'feature') {
-    if (orientation === 'landscape') return 12;
-    if (orientation === 'portrait') return 7;
-    return 9;
+function buildRows(entries: PhotoEntry[]): Row[] {
+  const rows: Row[] = [];
+  let pending: Array<{ entry: PhotoEntry; ar: number }> = [];
+
+  function flushPending(isLast: boolean) {
+    if (pending.length === 0) return;
+    const totalGaps = (pending.length - 1) * GAP;
+    const available = EFFECTIVE_WIDTH - totalGaps;
+    const sumAr = pending.reduce((s, p) => s + p.ar, 0);
+    // Single-photo rows stay at natural size — stretching to full width would
+    // make them visually indistinguishable from feature rows.
+    const useNaturalSize = isLast || pending.length === 1;
+    const height = useNaturalSize ? TARGET_HEIGHT : available / sumAr;
+    rows.push({
+      type: 'standard',
+      items: pending.map(({ entry, ar }) => ({
+        entry,
+        ar,
+        width: Math.round(height * ar),
+        height: Math.round(height),
+      })),
+      isLast,
+    });
+    pending = [];
   }
-  if (orientation === 'landscape') return 5;
-  return 4;
+
+  for (const entry of entries) {
+    const ar = getAspectRatio(entry);
+
+    if (entry.data.gridSize === 'feature') {
+      flushPending(false);
+      rows.push({ type: 'feature', entry, ar });
+      continue;
+    }
+
+    if (pending.length > 0) {
+      const currentNaturalWidth =
+        pending.reduce((s, p) => s + TARGET_HEIGHT * p.ar, 0) +
+        (pending.length - 1) * GAP;
+      if (currentNaturalWidth + GAP + TARGET_HEIGHT * ar > EFFECTIVE_WIDTH) {
+        flushPending(false);
+      }
+    }
+
+    pending.push({ entry, ar });
+  }
+
+  flushPending(true);
+  return rows;
 }
 
-function getAspectRatio(
-  gridSize: 'feature' | 'standard',
-  orientation: Orientation,
-  img: ImageMetadata | undefined,
-  w?: number,
-  h?: number
-): string {
-  const natW = img?.width ?? w;
-  const natH = img?.height ?? h;
-  if (natW && natH) return `${natW} / ${natH}`;
-  if (gridSize === 'feature') {
-    if (orientation === 'landscape') return '16 / 7';
-    if (orientation === 'portrait') return '3 / 4';
-    return '1 / 1';
-  }
-  if (orientation === 'landscape') return '4 / 3';
-  if (orientation === 'portrait') return '2 / 3';
-  return '1 / 1';
-}
+const rows = buildRows(photos);
 ---
 
 <BaseLayout title="Photographs" description="Photography by Cian Brassil — landscapes and coastline across Ireland.">
@@ -82,55 +123,83 @@ function getAspectRatio(
     {photos.length === 0 ? (
       <p class="empty-state">No photographs yet.</p>
     ) : (
-      <div class="gallery-grid">
-        {photos.map((entry) => {
-          const orientation = getOrientation(
-            entry.data.image,
-            entry.data.imageWidth,
-            entry.data.imageHeight
-          );
-          const colSpan = getColSpan(entry.data.gridSize, orientation);
-          const aspectRatio = getAspectRatio(
-            entry.data.gridSize,
-            orientation,
-            entry.data.image,
-            entry.data.imageWidth,
-            entry.data.imageHeight
-          );
-
-          return (
-            <a
-              href={`/photos/${entry.data.slug}`}
-              class="photo-card"
-              style={`grid-column: span ${colSpan};`}
-              aria-label={entry.data.title}
-            >
-              <div class="card-inner" style={`aspect-ratio: ${aspectRatio};`}>
-                {entry.data.image ? (
-                  <Image
-                    src={entry.data.image}
-                    alt={entry.data.description}
-                    width={entry.data.image.width}
-                    height={entry.data.image.height}
-                    class="card-img"
-                    loading="lazy"
-                    transition:name={`photo-${entry.data.slug}`}
-                  />
-                ) : entry.data.imageUrl ? (
-                  /* TODO: replace <img> with <Image> when local file replaces imageUrl */
-                  <img
-                    src={entry.data.imageUrl}
-                    alt={entry.data.description}
-                    width={entry.data.imageWidth}
-                    height={entry.data.imageHeight}
-                    loading="lazy"
-                    class="card-img"
-                    transition:name={`photo-${entry.data.slug}`}
-                  />
-                ) : null}
-                <span class="card-title">{entry.data.title}</span>
+      <div class="gallery-rows">
+        {rows.map((row) => {
+          if (row.type === 'feature') {
+            const { entry, ar } = row;
+            return (
+              <div class="gallery-row gallery-row--feature">
+                <a
+                  href={`/photos/${entry.data.slug}`}
+                  class="photo-card"
+                  aria-label={entry.data.title}
+                >
+                  <div class="card-inner" style={`aspect-ratio: ${ar};`}>
+                    {entry.data.image ? (
+                      <Image
+                        src={entry.data.image}
+                        alt={entry.data.description}
+                        width={entry.data.image.width}
+                        height={entry.data.image.height}
+                        class="card-img"
+                        loading="lazy"
+                        transition:name={`photo-${entry.data.slug}`}
+                      />
+                    ) : entry.data.imageUrl ? (
+                      <img
+                        src={entry.data.imageUrl}
+                        alt={entry.data.description}
+                        width={entry.data.imageWidth}
+                        height={entry.data.imageHeight}
+                        loading="lazy"
+                        class="card-img"
+                        transition:name={`photo-${entry.data.slug}`}
+                      />
+                    ) : null}
+                    <span class="card-title">{entry.data.title}</span>
+                  </div>
+                </a>
               </div>
-            </a>
+            );
+          }
+
+          // standard justified row
+          return (
+            <div class="gallery-row gallery-row--standard">
+              {row.items.map(({ entry, ar, width, height }) => (
+                <a
+                  href={`/photos/${entry.data.slug}`}
+                  class="photo-card"
+                  style={`width: ${width}px;`}
+                  aria-label={entry.data.title}
+                >
+                  <div class="card-inner" style={`height: ${height}px; aspect-ratio: ${ar};`}>
+                    {entry.data.image ? (
+                      <Image
+                        src={entry.data.image}
+                        alt={entry.data.description}
+                        width={entry.data.image.width}
+                        height={entry.data.image.height}
+                        class="card-img"
+                        loading="lazy"
+                        transition:name={`photo-${entry.data.slug}`}
+                      />
+                    ) : entry.data.imageUrl ? (
+                      <img
+                        src={entry.data.imageUrl}
+                        alt={entry.data.description}
+                        width={entry.data.imageWidth}
+                        height={entry.data.imageHeight}
+                        loading="lazy"
+                        class="card-img"
+                        transition:name={`photo-${entry.data.slug}`}
+                      />
+                    ) : null}
+                    <span class="card-title">{entry.data.title}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
           );
         })}
       </div>
@@ -177,13 +246,27 @@ function getAspectRatio(
     color: #737373;
   }
 
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: 60px;
-    row-gap: 100px;
-    grid-auto-flow: dense;
-    align-items: start;
+  /* Row container */
+  .gallery-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .gallery-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  /* Feature row: single photo, full container width */
+  .gallery-row--feature .photo-card {
+    width: 100%;
+  }
+
+  /* Standard row: photos have explicit widths set inline */
+  .gallery-row--standard .photo-card {
+    flex-shrink: 0;
   }
 
   .photo-card {
@@ -195,6 +278,7 @@ function getAspectRatio(
   .card-inner {
     position: relative;
     overflow: hidden;
+    width: 100%;
   }
 
   .card-img {
@@ -232,11 +316,10 @@ function getAspectRatio(
     transform: translateY(0);
   }
 
-  /* Touch/coarse pointer: title always visible */
+  /* Touch devices: no title overlay */
   @media (pointer: coarse) {
     .card-title {
-      opacity: 0.78;
-      transform: none;
+      display: none;
     }
   }
 
@@ -249,7 +332,7 @@ function getAspectRatio(
     }
   }
 
-  /* Mobile: single column, full-width */
+  /* Mobile: single column, full-width per photo */
   @media (max-width: 767px) {
     .gallery-page {
       padding: 40px 20px 64px;
@@ -259,19 +342,26 @@ function getAspectRatio(
       margin-bottom: 40px;
     }
 
-    .gallery-grid {
-      grid-template-columns: 1fr;
-      column-gap: 0;
-      row-gap: 32px;
+    .gallery-rows {
+      gap: 32px;
     }
 
+    .gallery-row {
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* Override all inline widths/heights — let aspect-ratio drive sizing */
     .photo-card {
-      grid-column: 1 / -1 !important;
+      width: 100% !important;
+    }
+
+    .card-inner {
+      height: auto !important;
     }
 
     .card-title {
-      opacity: 0.78;
-      transform: none;
+      display: none;
     }
   }
 </style>
