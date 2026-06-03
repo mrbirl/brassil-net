@@ -1,32 +1,19 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import '../styles/global.css';
 
-// TODO: replace with real hero photos from content collection (heroCandidate: true)
-const heroPhotos = [
-  {
-    src: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=85&auto=format&fit=crop',
-    title: 'Achill, last light',
-    alt: 'Achill Island, Co. Mayo',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=1800&q=85&auto=format&fit=crop',
-    title: 'Cliffs of Moher, February',
-    alt: 'Cliffs of Moher, Co. Clare',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1800&q=85&auto=format&fit=crop',
-    title: 'Connemara, first frost',
-    alt: 'Connemara, Co. Galway',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1485470733090-0aae1788d5af?w=1800&q=85&auto=format&fit=crop',
-    title: 'Killary, long light',
-    alt: 'Killary Harbour, Co. Galway',
-  },
-];
+const candidates = await getCollection('photos', ({ data }) => data.heroCandidate && !!data.image);
 
-const initialPhoto = heroPhotos[3];
+const heroPhotos = await Promise.all(
+  candidates.map(async (photo) => {
+    const img = await getImage({ src: photo.data.image!, width: 1800, format: 'webp', quality: 85 });
+    return { src: img.src, title: photo.data.title, alt: photo.data.description };
+  })
+);
+
+const initialPhoto = heroPhotos[0];
 ---
 
 <!doctype html>
@@ -53,13 +40,17 @@ const initialPhoto = heroPhotos[3];
 
       <!-- Photo frame -->
       <div class="photo-frame" id="photo-frame">
-        <img
-          class="photo-img"
-          src={initialPhoto.src}
-          alt={initialPhoto.alt}
-          data-photos={JSON.stringify(heroPhotos)}
-        />
-        <span class="photo-title" id="photo-title">{initialPhoto.title}</span>
+        {initialPhoto && (
+          <>
+            <img
+              class="photo-img"
+              src={initialPhoto.src}
+              alt={initialPhoto.alt}
+              data-photos={JSON.stringify(heroPhotos)}
+            />
+            <span class="photo-title" id="photo-title">{initialPhoto.title}</span>
+          </>
+        )}
       </div>
 
       <!-- Nameplate -->
