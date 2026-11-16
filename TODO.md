@@ -3,6 +3,13 @@
 Working list to first launch of the live site. Tick items off as they land.
 Scope for launch 1: photos + request-a-print by email + About. CV and Apps are hidden (planned to return, see "Later").
 
+## Status (handoff for the next session)
+
+- **2026-11-16:** Launch 1 code merged to `main` and pushed, which should trigger the Cloudflare Pages auto-deploy (not verified from the Claude session — no Cloudflare access there).
+- **Next step is Cian's:** review the deployed site on its `*.pages.dev` URL, then raise specific fixes in a follow-up session. Only after that review does brassil.net get pointed at Cloudflare (see "Cloudflare Pages and DNS").
+- The domain currently serves nothing (Shopify subscription lapsed).
+- Unchecked items below are open; anything needing Cian's input is marked **Cian**.
+
 ## Launch 1: get the site live
 
 ### Photo detail page (`src/pages/photos/[slug].astro`)
@@ -10,7 +17,7 @@ Scope for launch 1: photos + request-a-print by email + About. CV and Apps are h
 - [x] No prices shown (`priceEUR` kept in frontmatter, not displayed)
 - [x] "Request a print" mailto to cian@brassil.net, prefilled with title + URL (`src/site.ts`)
 - [ ] Hero letterbox: the black side bands don't quite match the photo's own blacks on dark images (visible seam on Achill Island Dawn). Consider a background matching the page instead of `#0A0A0A`.
-- [ ] Title font (Fraunces, accent): kept for now; revisit if it still feels off
+- [ ] **Cian:** title font (Fraunces, accent): kept for now; revisit if it still feels off
 
 ### Hide CV and Apps
 - [x] Homepage doors are now Photographs + About
@@ -21,7 +28,7 @@ Scope for launch 1: photos + request-a-print by email + About. CV and Apps are h
 ### About page (`src/pages/about.astro`)
 - [x] Layout, contact block
 - [ ] **Cian to review/rewrite the bio copy** (Claude's draft from facts already on the site; marked `TODO:` in the file)
-- [ ] Any other links to list (LinkedIn, Instagram, …)
+- [ ] **Cian:** any other links to list (LinkedIn, Instagram, …)
 
 ### Site plumbing
 - [x] 404 page
@@ -33,8 +40,9 @@ Scope for launch 1: photos + request-a-print by email + About. CV and Apps are h
 
 ### Cloudflare Pages and DNS
 - [ ] Confirm the Pages project: production branch `main`, build `pnpm build`, output `dist`, Node >= 22.12 (`NODE_VERSION` env var if needed)
-- [ ] Merge this branch to `main` → auto-deploy; check the `*.pages.dev` URL
-- [ ] Check brassil.net DNS today (Route 53 vs Cloudflare). **Preserve MX records** — cian@brassil.net must keep working, the site now depends on it
+- [x] Merge to `main` → auto-deploy
+- [ ] **Cian:** check the deploy succeeded and review the `*.pages.dev` URL (desktop + phone)
+- [ ] **Cian:** check brassil.net DNS today (Route 53 vs Cloudflare). **Preserve MX records** — cian@brassil.net must keep working, the site now depends on it
 - [ ] Add brassil.net (and www) as custom domains on the Pages project; move nameservers to Cloudflare if not already
 - [ ] Test a few old Shopify URLs redirect correctly once live
 - [ ] Enable Cloudflare Web Analytics (optional)
@@ -58,3 +66,8 @@ Scope for launch 1: photos + request-a-print by email + About. CV and Apps are h
 - [ ] Domain registrar decision (Gandi vs INWX) and move off Route 53
 - [ ] Decide whether to archive Shopify product history anywhere
 - [ ] Consider theprintspace creativehub API for automated fulfilment
+- [ ] Drop unused `@astrojs/cloudflare` dependency (adapter is not configured)
+
+## Known quirks
+- Browserslist warns that caniuse-lite data is old during `pnpm build`; harmless.
+- Gallery ordering is alphabetical by folder name until photos get `order` or `dateTaken`.

@@ -94,7 +94,7 @@ Adding a new app = create one .md file here. No code changes.
 - `/cv` — CV page with PDF download
 - `/apps` — index of vibe-coded apps (each at its own subdomain, see below)
 
-Their stub pages were deleted for launch 1 (recover from git history: commit before "Launch 1"). The `apps` content collection and `src/content/apps/` are kept. To bring either back: recreate the page, add it to the nav/footer in `src/layouts/BaseLayout.astro`, add a homepage door in `src/pages/index.astro` (the door grid currently assumes two doors — see `.door-first`), add it to `src/pages/sitemap.xml.ts`, and remove its temporary redirect from `public/_redirects`. Tracked in `TODO.md`.
+Their stub pages were deleted for launch 1 (recover from git history: `git show 68c9fa5:src/pages/cv.astro`, `git show 68c9fa5:src/pages/apps.astro`). The `apps` content collection and `src/content/apps/` are kept. To bring either back: recreate the page, add it to the nav/footer in `src/layouts/BaseLayout.astro`, add a homepage door in `src/pages/index.astro` (the door grid currently assumes two doors — see `.door-first`), add it to `src/pages/sitemap.xml.ts`, and remove its temporary redirect from `public/_redirects`. Tracked in `TODO.md`.
 
 ## Print-ordering flow
 
@@ -131,7 +131,7 @@ Apps needing backends use Cloudflare Workers + D1 (SQL) or KV (key-value); apps 
 Full design system is in `DESIGN.md` — read that alongside this file for any visual work.
 
 - **Aesthetic:** Swiss mono calling card. Minimal, neutral, precision-typeset. See `DESIGN.md`.
-- **Homepage:** Full-viewport, no top nav — the page itself is the navigation. Three doors (Photos / Apps / CV) anchor the bottom.
+- **Homepage:** Full-viewport, no top nav — the page itself is the navigation. Doors anchor the bottom: currently two (Photographs / About); Apps and CV return later.
 - **Typography:** Fraunces for the `Cian Brassil` nameplate only. IBM Plex Mono for everything else — body, labels, nav, UI, buttons.
 - **Colour:** Near-white `#F5F5F4` background, near-black `#0A0A0A` text. Single accent `#FF5C1F` used *only* on photo title labels on hover — not buttons, links, or nav.
 - **Tailwind tokens:** `bg-background`, `text-ink`, `text-muted`, `border-rim`, `text-accent` / `bg-accent`. Font utilities: `font-serif` (Fraunces), `font-mono` (IBM Plex Mono).
@@ -141,6 +141,9 @@ Full design system is in `DESIGN.md` — read that alongside this file for any v
 - Core Web Vitals should be green — images lazy-loaded, responsive `srcset`, modern formats (AVIF/WebP with fallback).
 
 ## Development workflow
+
+Site-wide constants (contact / print-request email) live in `src/site.ts`.
+
 
 - **Install:** `pnpm install`
 - **Dev server:** `pnpm dev` (runs on `localhost:4321`)
@@ -164,8 +167,8 @@ This project uses **Astro 6**. Key differences from older docs you may find onli
 
 - Content collection config lives at `src/content.config.ts` (not `src/content/config.ts`).
 - Collections require a `loader` — use `glob` from `astro/loaders` for file-based collections.
-- Output is `static` with the Cloudflare adapter; all Astro pages are pre-rendered. The adapter enables Cloudflare-specific features but does not change the static output.
-- Tailwind CSS v3 (not v4). Config is in `tailwind.config.mjs`; `darkMode: 'class'` is set there.
+- Output is `static`; all Astro pages are pre-rendered. The Cloudflare adapter is *not* configured in `astro.config.mjs` (removed as unnecessary; `@astrojs/cloudflare` is still listed in `package.json` and could be dropped). Pages Functions in `functions/` are deployed by Cloudflare Pages independently of Astro.
+- Tailwind CSS v3 (not v4). Config is in `tailwind.config.mjs`. No dark mode.
 - View Transitions: use `<ClientRouter />` from `astro:transitions` — the old `<ViewTransitions />` alias was removed in Astro 6.
 
 ## Coding conventions
@@ -188,13 +191,16 @@ This project uses **Astro 6**. Key differences from older docs you may find onli
 - Introduce a new framework, runtime, or hosting platform.
 - Add dependencies for things achievable with a few lines of code.
 - Create placeholder Lorem Ipsum content — ask for real copy or leave a `TODO:` marker.
-- Ship pages containing Unsplash or other external placeholder image URLs to the `brassil.net` production domain. **TODO: Before first deploy to the brassil.net production domain, all placeholder URLs must be replaced with real photos from the content collection. Placeholders must not ship to the live domain.**
+- Ship pages containing Unsplash or other external placeholder image URLs to the `brassil.net` production domain. (Checked at launch 1: no external placeholder URLs remain; all photos are local files from the content collection. Keep it that way.)
 
 ## User context
 
 Owner is a product manager with a technical background, comfortable reading code but hasn't written production code in years. Prefers direct, precise answers. Will push back on vague or hedged explanations. Working primarily through Claude Code for implementation. Based in Ireland; site content and currency default to EUR.
 
 ## Open questions / TODO
+
+The live working list is `TODO.md` — read it first when picking up work. Longer-standing questions:
+
 
 - Finalise domain registrar choice (Gandi vs INWX)
 - Decide whether to keep Shopify product history archived anywhere
