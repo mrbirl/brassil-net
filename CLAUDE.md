@@ -7,7 +7,7 @@ Personal hub site for Cian Brassil — photography, apps, CV, and links to past 
 - Replace an existing Shopify-hosted photography site (~€300/year) with a self-built static site costing near zero.
 - Serve as a hub landing page linking to photography, vibe-coded apps, CV, and previous startup sites.
 - Photography is the primary content; everything else is secondary.
-- All profits from photo sales go to charity.
+- Prints are available on request (by email); the site is not a shop.
 
 ## Tech stack
 
@@ -84,14 +84,23 @@ Adding a new app = create one .md file here. No code changes.
 
 ## Sections / routes
 
-- `/` — hub landing, featured photos, brief bio, links to everything
+- `/` — hub landing, hero photo, nameplate, doors to Photographs and About
 - `/photos` — gallery grid
-- `/photos/[slug]` — single photo, print options, request-print form
+- `/photos/[slug]` — single photo, description, "Request a print" (mailto for now; form in launch 2)
+- `/about` — short bio + contact
+- `/404` — not-found page
+
+**Hidden until ready — planned to come back:**
 - `/cv` — CV page with PDF download
 - `/apps` — index of vibe-coded apps (each at its own subdomain, see below)
-- `/about` — short bio + charity statement
 
-## Print-ordering flow (v1, manual)
+Their stub pages were deleted for launch 1 (recover from git history: commit before "Launch 1"). The `apps` content collection and `src/content/apps/` are kept. To bring either back: recreate the page, add it to the nav/footer in `src/layouts/BaseLayout.astro`, add a homepage door in `src/pages/index.astro` (the door grid currently assumes two doors — see `.door-first`), add it to `src/pages/sitemap.xml.ts`, and remove its temporary redirect from `public/_redirects`. Tracked in `TODO.md`.
+
+## Print-ordering flow
+
+**Launch 1 (current):** the detail page shows no prices. A "Request a print" link opens a prefilled email to `PRINT_REQUEST_EMAIL` (`src/site.ts`). Cian replies with sizes and price. `priceEUR` stays in the frontmatter but is not displayed.
+
+**Launch 2 (planned, v1 manual flow):**
 
 1. User fills request form on a photo page (name, email, size/paper choice, shipping address, notes).
 2. Form POSTs to `/functions/api/request-print.ts`.

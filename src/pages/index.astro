@@ -14,6 +14,10 @@ const heroPhotos = await Promise.all(
 );
 
 const initialPhoto = heroPhotos[0];
+
+const ogImage = candidates[0]
+  ? new URL((await getImage({ src: candidates[0].data.image!, width: 1200, format: 'jpeg', quality: 80 })).src, Astro.site).href
+  : undefined;
 ---
 
 <!doctype html>
@@ -22,6 +26,14 @@ const initialPhoto = heroPhotos[0];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Photography and projects by Cian Brassil." />
+    <link rel="canonical" href="https://brassil.net/" />
+    <meta property="og:site_name" content="brassil.net" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Cian Brassil" />
+    <meta property="og:description" content="Photography and projects by Cian Brassil." />
+    <meta property="og:url" content="https://brassil.net/" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>brassil.net</title>
 
@@ -67,25 +79,19 @@ const initialPhoto = heroPhotos[0];
         </div>
 
         <!-- Door 01 -->
-        <a href="/photos" class="door">
+        <a href="/photos" class="door door-first">
           <span class="door-num">01</span>
           <span class="door-title">Photographs <span class="door-arrow">↗</span></span>
           <span class="door-sub">Gallery &amp; prints</span>
         </a>
 
         <!-- Door 02 -->
-        <a href="/apps" class="door">
+        <a href="/about" class="door">
           <span class="door-num">02</span>
-          <span class="door-title">Apps <span class="door-arrow">↗</span></span>
-          <span class="door-sub">Small things I've made</span>
+          <span class="door-title">About <span class="door-arrow">↗</span></span>
+          <span class="door-sub">Who, and how to reach me</span>
         </a>
-
-        <!-- Door 03 -->
-        <a href="/cv" class="door">
-          <span class="door-num">03</span>
-          <span class="door-title">CV <span class="door-arrow">↗</span></span>
-          <span class="door-sub">Work, in brief</span>
-        </a>
+        <!-- Apps and CV doors removed until those pages exist (see TODO.md). -->
 
         <!-- Footer row -->
         <div class="nameplate-footer">
@@ -246,6 +252,11 @@ const initialPhoto = heroPhotos[0];
     cursor: pointer;
   }
 
+  /* Two doors on a four-column grid: identity in col 1, doors in cols 3–4. */
+  .door-first {
+    grid-column: 3;
+  }
+
   .door:hover {
     border-top-color: #0A0A0A;
   }
@@ -323,6 +334,10 @@ const initialPhoto = heroPhotos[0];
 
     .door-num {
       display: none;
+    }
+
+    .door-first {
+      grid-column: auto;
     }
 
     .door {

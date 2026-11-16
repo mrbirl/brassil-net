@@ -56,7 +56,7 @@ No fallback to Inter, Outfit, or system-sans for primary UI. Mono stack fallback
 - **Grid:** 12-column CSS grid where needed. Photography sections can break to full bleed. Text and card sections respect the content width.
 - **Spacing:** generous. Interior page sections have 80–96px vertical padding. Nameplate internal padding 36–40px.
 - **Corners:** sharp (0) on the homepage photo frame and doors. `border-radius: 12–16px` on interior cards. Never pill-shaped except on buttons.
-- **Buttons:** sharp or very low radius (`border-radius: 0`) for primary actions on homepage. Accent-filled pill (`border-radius: 100px`) for interior page CTAs.
+- **Buttons:** sharp or very low radius (`border-radius: 0`) for primary actions on homepage. Ink-filled pill (`#0A0A0A` background, `border-radius: 100px`) for interior page CTAs — never accent (see colour rules).
 
 ## Tech implementation
 
@@ -160,7 +160,9 @@ Gaps from `grid-auto-flow: dense` not perfectly packing are acceptable — they 
 - Hero image shares `transition:name={`photo-${slug}`}` with its gallery card — the photo morphs from card position to hero on navigation
 - Photo title in Fraunces ~42px, `#FF5C1F`, left-aligned, directly below the hero
 - Metadata: location + date in IBM Plex Mono muted, below the title
-- `TODO:` long description, print options panel, request-print form, related photos
+- Description (`longDescription` falling back to `description`), max 62ch
+- "Request a print" row: muted note + ink pill CTA (mailto for now). No prices shown.
+- `TODO:` request-print form (launch 2), related photos
 
 ### CV page (`/cv`)
 
@@ -226,6 +228,4 @@ Use Unsplash URLs as hero photo placeholders until real photos are dropped in. D
 - Wire homepage hero photo from content collection (`heroCandidate: true` photos)
 - CV page detailed treatment
 - Apps index page visual treatment
-- About page treatment
-- 404 page
 - Print request form loading/error states

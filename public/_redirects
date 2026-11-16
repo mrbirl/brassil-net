@@ -1,0 +1,17 @@
+# Cloudflare Pages redirects.
+# Old Shopify URLs → new site. Photo slugs were imported from Shopify product
+# handles (scripts/import-shopify-photos.mjs), so they map one-to-one.
+/products/:handle                       /photos/:handle   301
+/collections/:collection/products/:handle  /photos/:handle   301
+/collections                            /photos           301
+/collections/*                          /photos           301
+/pages/about                            /about            301
+/pages/*                                /                 301
+/cart                                   /photos           302
+/search                                 /photos           302
+
+# CV and Apps are hidden until launch (see TODO.md). Send stray links home.
+/cv                                     /                 302
+/cv/                                    /                 302
+/apps                                   /                 302
+/apps/                                  /                 302

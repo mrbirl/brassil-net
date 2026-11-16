@@ -1,8 +1,135 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL } from '../site';
 ---
 
-<BaseLayout title="About" description="About Cian Brassil.">
-  <h1 class="text-3xl font-bold">About</h1>
-  {/* TODO: short bio, charity statement for photo profits */}
+<BaseLayout title="About" description="About Cian Brassil — product manager and photographer in Galway, Ireland.">
+  <div class="about-page">
+    <div class="page-header">
+      <h1>About</h1>
+      <span class="page-meta">Galway · Ireland</span>
+    </div>
+
+    {/* TODO: draft copy assembled from facts already on the site — Cian to review and rewrite in his own words. */}
+    <div class="about-body">
+      <p>
+        I'm Cian Brassil, a product manager based in Galway, on the west coast of Ireland.
+      </p>
+      <p>
+        I take photographs mostly close to home, around Connemara, the Burren, Achill and
+        the Galway coast, and sometimes further afield, from New York to Sydney.
+      </p>
+      <p>
+        Prints of any photograph here are available on request. Email me with the one you're
+        interested in and I'll come back to you with sizes and options.
+      </p>
+    </div>
+
+    <dl class="about-contact">
+      <div>
+        <dt>Email</dt>
+        <dd><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></dd>
+      </div>
+      <div>
+        <dt>Photographs</dt>
+        <dd><a href="/photos">brassil.net/photos</a></dd>
+      </div>
+      {/* TODO: add any other links Cian wants listed (LinkedIn, Instagram, etc.) */}
+    </dl>
+  </div>
 </BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 40px 96px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+
+  .page-header h1 {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0A0A0A;
+    margin: 0;
+  }
+
+  .page-meta {
+    font-size: 11px;
+    color: #737373;
+    letter-spacing: 0.04em;
+  }
+
+  .about-body {
+    max-width: 62ch;
+  }
+
+  .about-body p {
+    margin: 0 0 20px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #0A0A0A;
+  }
+
+  .about-contact {
+    max-width: 62ch;
+    margin: 48px 0 0;
+    border-top: 1px solid #E5E5E4;
+  }
+
+  .about-contact > div {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #E5E5E4;
+    font-size: 12px;
+  }
+
+  .about-contact dt {
+    color: #737373;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  .about-contact dd {
+    margin: 0;
+  }
+
+  .about-contact a {
+    color: #0A0A0A;
+    text-decoration: underline;
+    text-decoration-color: #E5E5E4;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.15s ease;
+  }
+
+  .about-contact a:hover {
+    text-decoration-color: #0A0A0A;
+  }
+
+  @media (max-width: 767px) {
+    .about-page {
+      padding: 40px 20px 64px;
+    }
+
+    .page-header {
+      margin-bottom: 40px;
+    }
+
+    .about-contact > div {
+      grid-template-columns: 110px 1fr;
+    }
+  }
+</style>

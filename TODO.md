@@ -1,44 +1,44 @@
 # TODO
 
 Working list to first launch of the live site. Tick items off as they land.
-Scope for launch 1: photos + request-a-print by email + About. CV and Apps stay hidden.
+Scope for launch 1: photos + request-a-print by email + About. CV and Apps are hidden (planned to return, see "Later").
 
 ## Launch 1: get the site live
 
 ### Photo detail page (`src/pages/photos/[slug].astro`)
-- [ ] Render `longDescription` if present, else `description`
-- [ ] Show available sizes/papers, **no prices** (prices are quoted by email)
-- [ ] "Request a print" button: `mailto:` prefilled with photo title + URL (address: TBD, see Decisions)
-- [ ] Keep title font as is (Fraunces, accent); revisit later if it still feels off
-- [ ] Decide whether `priceEUR` stays in the schema/frontmatter (kept for now; just not displayed)
+- [x] Render `longDescription` if present, else `description`
+- [x] No prices shown (`priceEUR` kept in frontmatter, not displayed)
+- [x] "Request a print" mailto to cian@brassil.net, prefilled with title + URL (`src/site.ts`)
+- [ ] Hero letterbox: the black side bands don't quite match the photo's own blacks on dark images (visible seam on Achill Island Dawn). Consider a background matching the page instead of `#0A0A0A`.
+- [ ] Title font (Fraunces, accent): kept for now; revisit if it still feels off
 
 ### Hide CV and Apps
-- [ ] Remove CV and Apps from homepage doors (`src/pages/index.astro`), leaving Photographs and About
-- [ ] Remove from header and footer nav (`src/layouts/BaseLayout.astro`)
-- [ ] Stop `/cv` and `/apps` being built or indexed (delete the stubs or make them redirect/noindex; code stays in git)
-- [ ] Re-balance the homepage door grid for two doors, desktop and mobile
+- [x] Homepage doors are now Photographs + About
+- [x] Header and footer nav: Photos + About
+- [x] `/cv` and `/apps` stubs deleted; `public/_redirects` sends stray links to `/`
+- [x] Note in `CLAUDE.md` that both are planned to return, and how
 
 ### About page (`src/pages/about.astro`)
-- [ ] Bio copy (needs real text from Cian; leave a `TODO:` marker until then)
-- [ ] Charity statement: all profits from print sales go to charity (which charity: TBD)
-- [ ] Style it to match the design system (single column, editorial, Fraunces headings)
-- [ ] Add to nav/footer and as a homepage door
+- [x] Layout, contact block
+- [ ] **Cian to review/rewrite the bio copy** (Claude's draft from facts already on the site; marked `TODO:` in the file)
+- [ ] Any other links to list (LinkedIn, Instagram, …)
 
 ### Site plumbing
-- [ ] 404 page
-- [ ] `robots.txt` and sitemap
-- [ ] Open Graph / social share tags (use the photo on detail pages)
-- [ ] `public/_redirects`: old Shopify `/products/<handle>` and `/collections/*` URLs to `/photos/<slug>` and `/photos`
-- [ ] Fix gallery header ("25 photographs · 2026" is a placeholder because no photo has `dateTaken`)
-- [ ] Add more `heroCandidate: true` photos so the homepage hero has something to rotate (currently 1 of 25)
+- [x] 404 page
+- [x] `robots.txt` and `sitemap.xml` (hand-rolled, `src/pages/sitemap.xml.ts`)
+- [x] Open Graph / social share tags, canonical URLs
+- [x] `public/_redirects`: Shopify `/products/<handle>` → `/photos/<handle>`, collections → `/photos`
+- [x] Gallery header no longer shows a made-up year when photos have no `dateTaken`
+- [ ] Add more `heroCandidate: true` photos (currently 1 of 25) — and decide if the hero should rotate per visit (needs a few lines of client JS; static build otherwise always shows the first)
 
 ### Cloudflare Pages and DNS
-- [ ] Confirm the existing Pages project: repo connected, build command `pnpm build`, output `dist`, Node >= 22.12
-- [ ] Check the `*.pages.dev` preview of this branch/`main`
-- [ ] Check what DNS for brassil.net looks like today (Route 53 vs Cloudflare) and whether any email/MX records must be preserved
-- [ ] Add brassil.net as a custom domain on the Pages project and move nameservers to Cloudflare
-- [ ] Enable Cloudflare Web Analytics (optional, no cookie banner needed)
-- [ ] Final pre-launch pass: no external placeholder URLs, Lighthouse/Core Web Vitals check, mobile check
+- [ ] Confirm the Pages project: production branch `main`, build `pnpm build`, output `dist`, Node >= 22.12 (`NODE_VERSION` env var if needed)
+- [ ] Merge this branch to `main` → auto-deploy; check the `*.pages.dev` URL
+- [ ] Check brassil.net DNS today (Route 53 vs Cloudflare). **Preserve MX records** — cian@brassil.net must keep working, the site now depends on it
+- [ ] Add brassil.net (and www) as custom domains on the Pages project; move nameservers to Cloudflare if not already
+- [ ] Test a few old Shopify URLs redirect correctly once live
+- [ ] Enable Cloudflare Web Analytics (optional)
+- [ ] Final pass: Lighthouse/Core Web Vitals, mobile check
 
 ## Launch 2: print-request form (replaces the mailto)
 - [ ] Request form on the detail page (name, email, size/paper, shipping address, notes)
@@ -49,18 +49,12 @@ Scope for launch 1: photos + request-a-print by email + About. CV and Apps stay 
 - [ ] Loading / error / success states
 
 ## Later
-- [ ] CV page (decide: plain page, PDF, or both) and bring back its nav/door
-- [ ] Apps index (`src/content/apps/` + `/apps`) once there is at least one app to list
+- [ ] **Bring back CV** (decide: plain page, PDF, or both). Steps in `CLAUDE.md` → "Hidden until ready"
+- [ ] **Bring back Apps** index once there is at least one app to list. Same steps
 - [ ] Add `location` and `dateTaken` to photos; gallery ordering then follows date
 - [ ] Related photos on the detail page
 - [ ] Self-host Fraunces and IBM Plex Mono instead of loading from Google Fonts
 - [ ] Remove `imageUrl/imageWidth/imageHeight` from the photo schema (all photos are local files now)
-- [ ] Update `DESIGN.md` and `CLAUDE.md` where they have drifted (placeholder strategy, hidden routes, schema)
 - [ ] Domain registrar decision (Gandi vs INWX) and move off Route 53
 - [ ] Decide whether to archive Shopify product history anywhere
 - [ ] Consider theprintspace creativehub API for automated fulfilment
-
-## Decisions needed from Cian
-- Email address for the "Request a print" mailto
-- About page copy, and which charity
-- Whether to keep `/cv` and `/apps` as noindex stubs or remove the files entirely until they're ready (I'd remove them)
